@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JaebeStudio Parallax</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        .parallax-container {
+            height: 50vw;
+            border: 1px solid black;
+            width: 50vw;
+            position: relative;
+            margin: 120vh auto;
+            overflow: hidden;
+        }
+
+
+        .parallax-container .parallax-layer {
+            width: 90%;
+            background: red;
+            min-height: 10%;
+            position: absolute;
+            left: 5%
+        }
+
+        .parallax-container.reversed .parallax-layer {
+            bottom: 0;
+        }
+
+        .parallax-container.reversed .parallax-layer2 {
+            width: 90%;
+            background: greenyellow;
+            min-height: 5%;
+            position: absolute;
+            bottom: 10%;
+            left: 5%
+        }
+
+        .parallax-container.reversed .parallax-layer3 {
+            width: 90%;
+            background: cadetblue;
+            height: 20%;
+            position: absolute;
+            bottom: 15%;
+            left: 5%
+        }
+
+        span {
+            display: block;
+            margin: 2vw 0;
+        }
+    </style>
+</head>
+<body>
+<h1>JaebeParallax</h1>
+<p>scroll down</p>
+
+<div class="parallax-container standard">
+    <div class="parallax-layer">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+        <span>6</span>
+        <span>7</span>
+        <span>8</span>
+        <span>9</span>
+        <span>10</span>
+        <span>11</span>
+        <span>12</span>
+        <span>13</span>
+        <span>14</span>
+        <span>15</span>
+        <span>16</span>
+        <span>17</span>
+        <span>18</span>
+        <span>19</span>
+        <span>20</span>
+        <span>21</span>
+        <span>22</span>
+        <span>23</span>
+        <span>24</span>
+        <span>25</span>
+        <span>25</span>
+        <span>27</span>
+        <span>28</span>
+        <span>29</span>
+        <span>30</span>
+    </div>
+</div>
+
+<div class="parallax-container reversed">
+    <div class="parallax-layer"></div>
+    <div class="parallax-layer2"></div>
+    <div class="parallax-layer3"></div>
+</div>
+
+<script type="module">
+    import Parallax from "../parallax.js";
+
+    var parallax = new Parallax(document.querySelector('.parallax-container.standard'), {includeContainerHeight: true});
+    parallax.addLayer(document.querySelector('.parallax-container.standard .parallax-layer'), 1);
+    parallax.start();
+
+
+    var parallaxReversed = new Parallax(document.querySelector('.parallax-container.reversed'), {includeContainerHeight: false});
+
+    parallaxReversed.addLayer(document.querySelector('.parallax-container.reversed .parallax-layer'), -.5);
+    parallaxReversed.addLayer(document.querySelector('.parallax-container.reversed .parallax-layer2'), -.7);
+    parallaxReversed.addLayer(document.querySelector('.parallax-container.reversed .parallax-layer3'), -1.2);
+    parallaxReversed.start();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+{
+    "name": "jaebe-studio_parallax",
+    "version": "1.0.0",
+    "description": "JS script for parallax effect",
+    "main": "parallax.js"
+}
