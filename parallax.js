@@ -25,6 +25,7 @@
 */
 
 class Parallax {
+    _isStarted = false;
     _layers = [];
     _containerHeight = 0;
     _scrollAreaHeight = 0;
@@ -38,7 +39,14 @@ class Parallax {
         this._container = container;
         this._config = {...this._config, ...config};
         this._onResizeListener = this._onResize.bind(this);
-        this._onScrollListener = this._onResize.bind(this);
+        this._onScrollListener = this._repositionLayers.bind(this);
+    }
+
+    _onAnimationFrame() {
+        this._repositionLayers();
+        if (this._isStarted) {
+            window.requestAnimationFrame(this._onAnimationFrame.bind(this));
+        }
     }
 
     _onResize() {
@@ -75,16 +83,22 @@ class Parallax {
         }
     }
 
-    start(){
-        window.addEventListener('scroll', this._onScrollListener);
-        window.addEventListener('resize', this._onResizeListener);
-
+    start() {
+        this._isStarted = true;
         this._recalculateElementsSizes();
         this._repositionLayers();
+
+        window.addEventListener('resize', this._onResizeListener);
+        if (typeof requestAnimationFrame === 'undefined') {
+            window.addEventListener('scroll', this._onScrollListener);
+        } else {
+            window.requestAnimationFrame(this._onAnimationFrame.bind(this));
+        }
     }
 
-    stop(){
-        window.removeEventListener('scroll',  this._onScrollListener);
+    stop() {
+        this._isStarted = false;
+        window.removeEventListener('scroll', this._onScrollListener);
         window.removeEventListener('resize', this._onResizeListener);
     }
 }
