@@ -29,6 +29,7 @@ class Parallax {
     _layers = [];
     _containerHeight = 0;
     _scrollAreaHeight = 0;
+    _lastScrollPosition=0;
     _onResizeListener;
     _onScrollListener;
     _config = {
@@ -39,11 +40,14 @@ class Parallax {
         this._container = container;
         this._config = {...this._config, ...config};
         this._onResizeListener = this._onResize.bind(this);
-        this._onScrollListener = this._repositionLayers.bind(this);
+        this._onScrollListener = this._onScroll.bind(this);
     }
 
     _onAnimationFrame() {
-        this._repositionLayers();
+        if(window.scrollY !== this._lastScrollPosition) {
+            this._lastScrollPosition = window.scrollY;
+            this._onScroll();
+        }
         if (this._isStarted) {
             window.requestAnimationFrame(this._onAnimationFrame.bind(this));
         }
@@ -51,7 +55,7 @@ class Parallax {
 
     _onResize() {
         this._recalculateElementsSizes();
-        this._repositionLayers()
+        this._onScroll()
     }
 
     addLayer(layer, scrollMultiplier) {
@@ -69,24 +73,28 @@ class Parallax {
         }
     }
 
-    _repositionLayers() {
+    _onScroll() {
         let containerOffset = this._container.getBoundingClientRect();
-        let top = containerOffset.top + this._containerHeight;
+        let containerOffsetBottom = containerOffset.top + this._containerHeight;
 
-        if (top > 0 && top < this._scrollAreaHeight) {
-            for (let i = 0; i < this._layers.length; i++) {
-                const layer = this._layers[i];
-                const layerScrollDistance = (this._containerHeight - layer.height);
-                this.mainMultiplier = this._scrollAreaHeight / layerScrollDistance;
-                layer.elem.style.transform = 'translateY(' + (((top / this.mainMultiplier) - layerScrollDistance) * layer.multiplier * -1) + 'px)';
-            }
+        if (containerOffsetBottom > 0 && containerOffsetBottom < this._scrollAreaHeight) {
+            this._updateLayersPositions(containerOffsetBottom)
+        }
+    }
+
+    _updateLayersPositions(containerOffsetBottom){
+        for (let i = 0; i < this._layers.length; i++) {
+            const layer = this._layers[i];
+            const layerScrollDistance = (this._containerHeight - layer.height);
+            this.mainMultiplier = this._scrollAreaHeight / layerScrollDistance;
+            layer.elem.style.transform = 'translateY(' + (((containerOffsetBottom / this.mainMultiplier) - layerScrollDistance) * layer.multiplier * -1) + 'px)';
         }
     }
 
     start() {
         this._isStarted = true;
         this._recalculateElementsSizes();
-        this._repositionLayers();
+        this._onScroll();
 
         window.addEventListener('resize', this._onResizeListener);
         if (typeof requestAnimationFrame === 'undefined') {
