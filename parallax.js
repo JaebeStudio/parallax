@@ -27,9 +27,12 @@
 class Parallax {
     _isStarted = false;
     _layers = [];
+    _callbacks = {
+        update: []
+    };
     _containerHeight = 0;
     _scrollAreaHeight = 0;
-    _lastScrollPosition=0;
+    _lastScrollPosition = 0;
     _onResizeListener;
     _onScrollListener;
     _config = {
@@ -44,7 +47,7 @@ class Parallax {
     }
 
     _onAnimationFrame() {
-        if(window.scrollY !== this._lastScrollPosition) {
+        if (window.scrollY !== this._lastScrollPosition) {
             this._lastScrollPosition = window.scrollY;
             this._onScroll();
         }
@@ -78,16 +81,18 @@ class Parallax {
         let containerOffsetBottom = containerOffset.top + this._containerHeight;
 
         if (containerOffsetBottom > 0 && containerOffsetBottom < this._scrollAreaHeight) {
-            this._updateLayersPositions(containerOffsetBottom)
+            const percentagePosition= containerOffsetBottom / this._scrollAreaHeight;
+            this._updateLayersPositions(containerOffsetBottom);
+            this._runCallbacks(this._callbacks.update, [percentagePosition])
         }
     }
 
-    _updateLayersPositions(containerOffsetBottom){
+    _updateLayersPositions(containerOffsetBottom) {
         for (let i = 0; i < this._layers.length; i++) {
             const layer = this._layers[i];
             const layerScrollDistance = (this._containerHeight - layer.height);
-            this.mainMultiplier = this._scrollAreaHeight / layerScrollDistance;
-            layer.elem.style.transform = 'translateY(' + (((containerOffsetBottom / this.mainMultiplier) - layerScrollDistance) * layer.multiplier * -1) + 'px)';
+            const mainMultiplier = this._scrollAreaHeight / layerScrollDistance;
+            layer.elem.style.transform = 'translateY(' + (((containerOffsetBottom / mainMultiplier) - layerScrollDistance) * layer.multiplier * -1) + 'px)';
         }
     }
 
@@ -108,6 +113,16 @@ class Parallax {
         this._isStarted = false;
         window.removeEventListener('scroll', this._onScrollListener);
         window.removeEventListener('resize', this._onResizeListener);
+    }
+
+    onUpdate(callback) {
+        this._callbacks.update.push(callback);
+    }
+
+    _runCallbacks(callbacks, params){
+        for(let i =0; i < callbacks.length; i++){
+            callbacks[i].apply(null,params);
+        }
     }
 }
 

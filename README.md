@@ -41,6 +41,7 @@ Parallax layer can be bigger than parent element
 - addLayer(element, scrollMultiplier); // scrollMultiplier defines how fast and in which direction layer should move 
 - start();
 - stop();
+- onUpdate(callback); // in callback's param is percentage update state (0 - 1)
 
 ## Options
 ```javascript
